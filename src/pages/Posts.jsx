@@ -4,6 +4,7 @@ import "../styles/App.css"
 import PostForm from "../components/PostForm";
 import MySelect from "../components/UI/select/MySelect";
 import axios from "axios";
+import SearchPanel from "../components/SearchPanel";
 
 
 
@@ -18,9 +19,16 @@ function Posts() {
 
   const [posts, setPosts] = useState([ ])
 
-  const [selectedSort, setSelectedSort] = useState(
-    ''
-  )
+  const [selectedSort, setSelectedSort] = useState('')
+  function getSortedPosts() {
+    console.log('GETSORTEDPOSTS')
+    if(selectedSort){
+      return [...posts].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))
+    }
+    return posts;
+  }
+
+  const sortedPosts = getSortedPosts
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
@@ -32,8 +40,6 @@ function Posts() {
 
   const sortPosts = (sort) => {
     setSelectedSort(sort);
-    console.log(sort)
-    setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])))
   }
 
   async function fetchPosts() {
@@ -46,6 +52,7 @@ function Posts() {
       <PostForm create={createPost} />
       <hr style={{margin: "15px 0"}} />
       <div>
+        <SearchPanel pHolder={'Поиск РЫБОВ'}/>
         <MySelect
           value={selectedSort}
           onChange={sortPosts}
@@ -58,7 +65,7 @@ function Posts() {
       </div>
       <h1 className="Head">ПОКАЗ РЫБОВ</h1>
       {posts.length !== 0
-      ? <PostList posts={posts} remove={removePost}/>
+      ? <PostList posts={sortedPosts} remove={removePost}/>
       : <div>
           РЫБОВ не нашлось :(
         </div>
